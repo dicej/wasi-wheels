@@ -1,0 +1,76 @@
+name: Release
+on:
+  push:
+    branches: [main]
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  release:
+    name: Build and release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Cache CPython
+        id: cache-cpython-wasi
+        uses: actions/cache@v3
+        with:
+          path: cpython/builddir/wasi
+          key: cpython-wasi
+          enableCrossOsArchive: true
+
+      - name: Build
+        shell: bash
+        run: make -j4
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+            name: wasi-wheels
+            path: build/numpy-wasi.tar.gz
+
+      - name: Upload binary to Github release (tag)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/numpy-wasi.tar.gz
+          tag: ${{ github.ref }}
+
+  update_canary_release:
+    name: Update canary release
+    needs: release
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download release assets
+        uses: actions/download-artifact@v3
+        with:
+            name: wasi-wheels
+
+      - name: Delete canary tag
+        uses: dev-drprasad/delete-tag-and-release@v0.2.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: canary
+
+      - name: Recreate canary tag and release
+        uses: ncipollo/release-action@v1.10.0
+        with:
+          tag: canary
+          allowUpdates: true
+          prerelease: true
+          artifacts: "numpy-wasi.tar.gz"

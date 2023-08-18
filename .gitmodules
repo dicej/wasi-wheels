@@ -1,0 +1,6 @@
+[submodule "numpy/numpy"]
+	path = numpy/numpy
+	url = https://github.com/numpy/numpy
+[submodule "cpython"]
+	path = cpython
+	url = https://github.com/dicej/cpython
