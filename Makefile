@@ -2,8 +2,8 @@ BUILD_DIR := $(abspath build)
 WASI_SDK := $(BUILD_DIR)/wasi-sdk
 CPYTHON := $(abspath cpython/builddir/wasi/install)
 NUMPY := $(BUILD_DIR)/numpy-wasi.tar.gz
-WASI_SDK_VERSION := 20.15ge8bb8fade354
-WASI_SDK_RELEASE := shared-library-alpha-1
+WASI_SDK_VERSION := 20.31gfe4d2f01387d
+WASI_SDK_RELEASE := shared-library-alpha-3
 HOST_PLATFORM := $(shell uname -s | sed -e 's/Darwin/macos/' -e 's/Linux/linux/')
 
 .PHONY: all
@@ -42,6 +42,7 @@ $(CPYTHON): $(WASI_SDK)
 			fi) \
 		--prefix=$$(pwd)/install \
 		--enable-wasm-dynamic-linking \
+		--enable-ipv6 \
 		--disable-test-modules && \
 		make install)
 
