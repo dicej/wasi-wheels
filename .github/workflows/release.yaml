@@ -23,6 +23,14 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+          target: wasm32-wasi
+
       - name: Cache CPython
         id: cache-cpython-wasi
         uses: actions/cache@v3
@@ -46,7 +54,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: build/numpy-wasi.tar.gz
+          file: build/*-wasi.tar.gz
           tag: ${{ github.ref }}
 
   update_canary_release:

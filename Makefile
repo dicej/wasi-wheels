@@ -3,6 +3,7 @@ WASI_SDK := $(BUILD_DIR)/wasi-sdk
 CPYTHON := $(abspath cpython/builddir/wasi/install)
 SYSCONFIG := $(abspath cpython/builddir/wasi/build/lib.wasi-wasm32-3.11)
 OUTPUTS := \
+	$(BUILD_DIR)/frozenlist-wasi.tar.gz \
 	$(BUILD_DIR)/numpy-wasi.tar.gz \
 	$(BUILD_DIR)/regex-wasi.tar.gz \
 	$(BUILD_DIR)/pydantic_core-wasi.tar.gz \
@@ -19,12 +20,14 @@ all: $(OUTPUTS)
 
 $(OUTPUTS): $(WASI_SDK) $(CPYTHON)
 	@mkdir -p "$(@D)"
+	(cd frozenlist && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
 	(cd charset_normalizer && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
 	(cd numpy && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
 	(cd pydantic-core && PYO3_CROSS_LIB_DIR=$(PYO3_CROSS_LIB_DIR) CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
 	(cd regex && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
 	(cd tiktoken && PYO3_CROSS_LIB_DIR=$(PYO3_CROSS_LIB_DIR) CROSS_PREFIX=$(CPYTHON) SYSCONFIG=$(SYSCONFIG) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
 	
+	cp -a frozenlist/src/build/lib.*/frozenlist "$(@D)"
 	cp -a charset_normalizer/src/build/lib.*/charset_normalizer "$(@D)"
 	cp -a numpy/numpy/build/lib.*/numpy "$(@D)"
 	cp -a pydantic-core/src/build/*/pydantic_core "$(@D)"
@@ -32,6 +35,7 @@ $(OUTPUTS): $(WASI_SDK) $(CPYTHON)
 	cp -a tiktoken/src/build/lib.*/tiktoken "$(@D)"
 	cp -a tiktoken/src/build/lib.*/tiktoken_ext "$(@D)"
 	
+	(cd "$(@D)" && tar czf frozenlist-wasi.tar.gz frozenlist)
 	(cd "$(@D)" && tar czf charset_normalizer-wasi.tar.gz charset_normalizer)
 	(cd "$(@D)" && tar czf numpy-wasi.tar.gz numpy)
 	(cd "$(@D)" && tar czf pydantic_core-wasi.tar.gz pydantic_core)

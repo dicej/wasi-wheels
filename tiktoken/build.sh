@@ -7,7 +7,7 @@ if [ ! -e venv ]; then
 fi
 
 . venv/bin/activate
-pip install setuptools-rust build wheel
+pip install setuptools-rust build wheel maturin
 
 ARCH_TRIPLET=_wasi_wasm32-wasi
 

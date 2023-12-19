@@ -16,3 +16,6 @@
 [submodule "charset_normalizer/src"]
 	path = charset_normalizer/src
 	url = https://github.com/Ousret/charset_normalizer
+[submodule "frozenlist/src"]
+	path = frozenlist/src
+	url = https://github.com/aio-libs/frozenlist
