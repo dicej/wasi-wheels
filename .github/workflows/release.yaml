@@ -39,7 +39,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
             name: wasi-wheels
-            path: build/numpy-wasi.tar.gz
+            path: build/*-wasi.tar.gz
 
       - name: Upload binary to Github release (tag)
         if: startsWith(github.ref, 'refs/tags/v')
@@ -67,10 +67,14 @@ jobs:
         with:
           tag_name: canary
 
-      - name: Recreate canary tag and release
-        uses: ncipollo/release-action@v1.10.0
+      - uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          tag: canary
-          allowUpdates: true
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
           prerelease: true
-          artifacts: "numpy-wasi.tar.gz"
+          title: "Development Build"
+          files: |
+            *.tar.gz
+            *.txt
+            *.whl
+        if: github.ref == 'refs/heads/main'

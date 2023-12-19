@@ -2,6 +2,14 @@
 
 set -eou pipefail
 
+if [ ! -e venv ]; then
+  python3 -v -m venv venv
+fi
+
+which python3
+. venv/bin/activate
+pip install setuptools
+
 ARCH_TRIPLET=_wasi_wasm32-wasi
 
 export CC="${WASI_SDK_PATH}/bin/clang"
@@ -16,11 +24,4 @@ export AR="${WASI_SDK_PATH}/bin/ar"
 export RANLIB=true
 export LDFLAGS="-shared"
 export _PYTHON_SYSCONFIGDATA_NAME=_sysconfigdata_${ARCH_TRIPLET}
-export NPY_DISABLE_SVML=1
-export NPY_BLAS_ORDER=
-export NPY_LAPACK_ORDER=
-
-pip3 install cython
-(cd numpy && python3 setup.py build --disable-optimization -j 4)
-
-#cp -a numpy/build/lib.*/numpy build/
+(cd src && python3 setup.py build -j 4)

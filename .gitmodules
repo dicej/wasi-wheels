@@ -4,3 +4,15 @@
 [submodule "cpython"]
 	path = cpython
 	url = https://github.com/dicej/cpython
+[submodule "regex/src"]
+	path = regex/src
+	url = https://github.com/mrabarnett/mrab-regex
+[submodule "tiktoken/src"]
+	path = tiktoken/src
+	url = https://github.com/OpenAI/tiktoken
+[submodule "pydantic-core/src"]
+	path = pydantic-core/src
+	url = https://github.com/pydantic/pydantic-core
+[submodule "charset_normalizer/src"]
+	path = charset_normalizer/src
+	url = https://github.com/Ousret/charset_normalizer

@@ -1,19 +1,43 @@
 BUILD_DIR := $(abspath build)
 WASI_SDK := $(BUILD_DIR)/wasi-sdk
 CPYTHON := $(abspath cpython/builddir/wasi/install)
-NUMPY := $(BUILD_DIR)/numpy-wasi.tar.gz
+SYSCONFIG := $(abspath cpython/builddir/wasi/build/lib.wasi-wasm32-3.11)
+OUTPUTS := \
+	$(BUILD_DIR)/numpy-wasi.tar.gz \
+	$(BUILD_DIR)/regex-wasi.tar.gz \
+	$(BUILD_DIR)/pydantic_core-wasi.tar.gz \
+	$(BUILD_DIR)/tiktoken-wasi.tar.gz \
+	$(BUILD_DIR)/tiktoken_ext-wasi.tar.gz \
+	$(BUILD_DIR)/charset_normalizer-wasi.tar.gz
 WASI_SDK_VERSION := 20.15ge8bb8fade354
 WASI_SDK_RELEASE := shared-library-alpha-1
 HOST_PLATFORM := $(shell uname -s | sed -e 's/Darwin/macos/' -e 's/Linux/linux/')
+PYO3_CROSS_LIB_DIR := $(abspath cpython/builddir/wasi/build/lib.wasi-wasm32-3.11)
 
 .PHONY: all
-all: $(NUMPY)
+all: $(OUTPUTS)
 
-$(NUMPY): $(WASI_SDK) $(CPYTHON)
+$(OUTPUTS): $(WASI_SDK) $(CPYTHON)
 	@mkdir -p "$(@D)"
+	(cd charset_normalizer && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
 	(cd numpy && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
+	(cd pydantic-core && PYO3_CROSS_LIB_DIR=$(PYO3_CROSS_LIB_DIR) CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
+	(cd regex && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
+	(cd tiktoken && PYO3_CROSS_LIB_DIR=$(PYO3_CROSS_LIB_DIR) CROSS_PREFIX=$(CPYTHON) SYSCONFIG=$(SYSCONFIG) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
+	
+	cp -a charset_normalizer/src/build/lib.*/charset_normalizer "$(@D)"
 	cp -a numpy/numpy/build/lib.*/numpy "$(@D)"
+	cp -a pydantic-core/src/build/*/pydantic_core "$(@D)"
+	cp -a regex/src/build/lib.*/regex "$(@D)"
+	cp -a tiktoken/src/build/lib.*/tiktoken "$(@D)"
+	cp -a tiktoken/src/build/lib.*/tiktoken_ext "$(@D)"
+	
+	(cd "$(@D)" && tar czf charset_normalizer-wasi.tar.gz charset_normalizer)
 	(cd "$(@D)" && tar czf numpy-wasi.tar.gz numpy)
+	(cd "$(@D)" && tar czf pydantic_core-wasi.tar.gz pydantic_core)
+	(cd "$(@D)" && tar czf regex-wasi.tar.gz regex)
+	(cd "$(@D)" && tar czf tiktoken-wasi.tar.gz tiktoken)
+	(cd "$(@D)" && tar czf tiktoken_ext-wasi.tar.gz tiktoken_ext)
 
 $(WASI_SDK):
 	@mkdir -p "$(@D)"
@@ -26,6 +50,7 @@ $(WASI_SDK):
 $(CPYTHON): $(WASI_SDK)
 	@mkdir -p "$(@D)"
 	@mkdir -p "$(@D)"/../build
+	@echo "$(@D)"
 	(cd "$(@D)"/../build && ../../configure --prefix=$$(pwd)/install && make)
 	(cd "$(@D)" && \
 		WASI_SDK_PATH=$(WASI_SDK) \
