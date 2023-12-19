@@ -27,7 +27,7 @@ $(OUTPUTS): $(WASI_SDK) $(CPYTHON)
 	(cd regex && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
 	(cd tiktoken && PYO3_CROSS_LIB_DIR=$(PYO3_CROSS_LIB_DIR) CROSS_PREFIX=$(CPYTHON) SYSCONFIG=$(SYSCONFIG) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
 	
-	cp -a frozenlist/src/build/lib.*/frozenlist "$(@D)"
+	cp -a frozenlist/src/build/*/frozenlist "$(@D)"
 	cp -a charset_normalizer/src/build/lib.*/charset_normalizer "$(@D)"
 	cp -a numpy/numpy/build/lib.*/numpy "$(@D)"
 	cp -a pydantic-core/src/build/*/pydantic_core "$(@D)"

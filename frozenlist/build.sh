@@ -25,4 +25,6 @@ export RANLIB=true
 export LDFLAGS="-shared"
 export _PYTHON_SYSCONFIGDATA_NAME=_sysconfigdata_${ARCH_TRIPLET}
 
-(cd src && python3 -m build -n -w)
+cd src
+python3 -m build -n -w
+wheel unpack --dest build dist/*.whl 
