@@ -25,6 +25,7 @@ export LDFLAGS="-shared"
 export _PYTHON_SYSCONFIGDATA_NAME=_sysconfigdata_${ARCH_TRIPLET}
 export CARGO_BUILD_TARGET=wasm32-wasi
 
-sed -i '' -e '/pyo3 =/s/features = \[.*\]/features = ["generate-import-lib", "extension-module"]/g' src/Cargo.toml
+cargo="$(<src/Cargo.toml sed -e '/pyo3 =/s/features = \[.*\]/features = ["generate-import-lib", "extension-module"]/g')"
+echo "$cargo" >src/Cargo.toml
 
 (cd src && python3 -m build -n -w)
