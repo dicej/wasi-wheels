@@ -23,6 +23,8 @@ jobs:
         with:
           python-version: '3.11'
 
+      - uses: actions/setup-node@v3.8.1
+
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:

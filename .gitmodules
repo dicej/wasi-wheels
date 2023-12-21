@@ -19,3 +19,30 @@
 [submodule "frozenlist/src"]
 	path = frozenlist/src
 	url = https://github.com/aio-libs/frozenlist
+[submodule "yarl/src"]
+	path = yarl/src
+	url = https://github.com/aio-libs/yarl
+[submodule "wrapt/src"]
+	path = wrapt/src
+	url = https://github.com/GrahamDumpleton/wrapt
+[submodule "yaml/src"]
+	path = yaml/src
+	url = https://github.com/yaml/pyyaml
+[submodule "sqlalchemy/src"]
+	path = sqlalchemy/src
+	url = https://github.com/sqlalchemy/sqlalchemy/
+[submodule "pandas/src"]
+	path = pandas/src
+	url = https://github.com/pandas-dev/pandas
+[submodule "multidict/src"]
+	path = multidict/src
+	url = https://github.com/aio-libs/multidict
+[submodule "greenlet/src"]
+	path = greenlet/src
+	url = https://github.com/python-greenlet/greenlet
+[submodule "aiohttp/src"]
+	path = aiohttp/src
+	url = https://github.com/aio-libs/aiohttp
+[submodule "yaml/include"]
+	path = yaml/include
+	url = https://github.com/yaml/libyaml
