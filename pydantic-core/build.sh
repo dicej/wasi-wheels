@@ -16,7 +16,16 @@ export CC="${WASI_SDK_PATH}/bin/clang"
 export CXX="${WASI_SDK_PATH}/bin/clang++"
 
 export PYTHONPATH=$CROSS_PREFIX/lib/python3.11
-export RUSTFLAGS="-C link-args=-L${WASI_SDK_PATH}/build/install/opt/wasi-sdk/share/wasi-sysroot/lib/wasm32-wasi -C linker=${WASI_SDK_PATH}/bin/wasm-ld"
+
+RUSTFLAGS="${RUSTFLAGS:-} -C link-args=-L${WASI_SDK_PATH}/share/wasi-sysroot/lib/wasm32-wasi/"
+RUSTFLAGS="${RUSTFLAGS} -C linker=${WASI_SDK_PATH}/bin/wasm-ld"
+RUSTFLAGS="${RUSTFLAGS} -C link-self-contained=no"
+RUSTFLAGS="${RUSTFLAGS} -C link-args=--experimental-pic"
+RUSTFLAGS="${RUSTFLAGS} -C link-args=--shared"
+RUSTFLAGS="${RUSTFLAGS} -C relocation-model=pic"
+RUSTFLAGS="${RUSTFLAGS} -C linker-plugin-lto=yes"
+export RUSTFLAGS="$RUSTFLAGS"
+
 export CFLAGS="-I${CROSS_PREFIX}/include/python3.11 -D__EMSCRIPTEN__=1"
 export CXXFLAGS="-I${CROSS_PREFIX}/include/python3.11"
 export LDSHARED=${CC}
@@ -28,5 +37,5 @@ export CARGO_BUILD_TARGET=wasm32-wasi
 cd src
 rm -rf build
 mkdir build
-maturin build --release --target wasm32-wasi --out dist -i python3.11
+maturin build --release --target wasm32-wasi --out dist -i python3.11 -vvv
 wheel unpack --dest build dist/*.whl 

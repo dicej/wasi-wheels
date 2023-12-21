@@ -27,57 +27,87 @@ PYO3_CROSS_LIB_DIR := $(abspath cpython/builddir/wasi/build/lib.wasi-wasm32-3.11
 all: $(OUTPUTS)
 
 $(OUTPUTS): $(WASI_SDK) $(CPYTHON)
+
+$(BUILD_DIR)/aiohttp-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
 	@mkdir -p "$(@D)"
-	
-	# semi-working:
 	(cd aiohttp && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	(cd charset_normalizer && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	(cd frozenlist && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	(cd multidict && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	(cd numpy && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	(cd pandas && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	(cd pydantic-core && PYO3_CROSS_LIB_DIR=$(PYO3_CROSS_LIB_DIR) CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	(cd regex && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	(cd sqlalchemy && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	(cd tiktoken && PYO3_CROSS_LIB_DIR=$(PYO3_CROSS_LIB_DIR) CROSS_PREFIX=$(CPYTHON) SYSCONFIG=$(SYSCONFIG) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	(cd wrapt && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	(cd yaml && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	(cd yarl && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	
-	# island of misfit toys:
-	#(cd greenlet && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	
 	cp -a aiohttp/src/build/*/aiohttp "$(@D)"
+	(cd "$(@D)" && tar czf aiohttp-wasi.tar.gz aiohttp)
+
+$(BUILD_DIR)/charset_normalizer-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
+	@mkdir -p "$(@D)"
+	(cd charset_normalizer && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
 	cp -a charset_normalizer/src/build/lib.*/charset_normalizer "$(@D)"
+	(cd "$(@D)" && tar czf charset_normalizer-wasi.tar.gz charset_normalizer)
+
+$(BUILD_DIR)/frozenlist-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
+	@mkdir -p "$(@D)"
+	(cd frozenlist && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
 	cp -a frozenlist/src/build/*/frozenlist "$(@D)"
+	(cd "$(@D)" && tar czf frozenlist-wasi.tar.gz frozenlist)
+
+$(BUILD_DIR)/multidict-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
+	@mkdir -p "$(@D)"
+	(cd multidict && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
 	cp -a multidict/src/build/lib.*/multidict "$(@D)"
+	(cd "$(@D)" && tar czf multidict-wasi.tar.gz multidict)
+
+$(BUILD_DIR)/numpy-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
+	@mkdir -p "$(@D)"
+	(cd numpy && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
 	cp -a numpy/numpy/build/lib.*/numpy "$(@D)"
+	(cd "$(@D)" && tar czf numpy-wasi.tar.gz numpy)
+
+$(BUILD_DIR)/pandas-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
+	@mkdir -p "$(@D)"
+	(cd pandas && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
 	cp -a pandas/src/build/lib.*/pandas "$(@D)"
+	(cd "$(@D)" && tar czf pandas-wasi.tar.gz pandas)
+
+$(BUILD_DIR)/pydantic_core-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
+	@mkdir -p "$(@D)"
+	(cd pydantic-core && PYO3_CROSS_LIB_DIR=$(PYO3_CROSS_LIB_DIR) CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
 	cp -a pydantic-core/src/build/*/pydantic_core "$(@D)"
+	(cd "$(@D)" && tar czf pydantic_core-wasi.tar.gz pydantic_core)
+
+$(BUILD_DIR)/regex-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
+	@mkdir -p "$(@D)"
+	(cd regex && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
 	cp -a regex/src/build/lib.*/regex "$(@D)"
+	(cd "$(@D)" && tar czf regex-wasi.tar.gz regex)
+
+$(BUILD_DIR)/sqlalchemy-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
+	@mkdir -p "$(@D)"
+	(cd sqlalchemy && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
 	cp -a sqlalchemy/src/build/lib.*/sqlalchemy "$(@D)"
+	(cd "$(@D)" && tar czf sqlalchemy-wasi.tar.gz sqlalchemy)
+
+$(BUILD_DIR)/tiktoken-wasi.tar.gz $(BUILD_DIR)/tiktoken_ext-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
+	@mkdir -p "$(@D)"
+	(cd tiktoken && PYO3_CROSS_LIB_DIR=$(PYO3_CROSS_LIB_DIR) CROSS_PREFIX=$(CPYTHON) SYSCONFIG=$(SYSCONFIG) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
 	cp -a tiktoken/src/build/lib.*/tiktoken "$(@D)"
 	cp -a tiktoken/src/build/lib.*/tiktoken_ext "$(@D)"
-	cp -a wrapt/src/build/lib.*/wrapt "$(@D)"
-	cp -a yaml/src/build/lib.*/yaml "$(@D)"
-	cp -a yaml/src/build/lib.*/_yaml "$(@D)"
-	cp -a yarl/src/build/*/yarl "$(@D)"
-	
-	ls "$(@D)"
-	(cd "$(@D)" && tar czf aiohttp-wasi.tar.gz aiohttp)
-	(cd "$(@D)" && tar czf charset_normalizer-wasi.tar.gz charset_normalizer)
-	(cd "$(@D)" && tar czf frozenlist-wasi.tar.gz frozenlist)
-	(cd "$(@D)" && tar czf multidict-wasi.tar.gz multidict)
-	(cd "$(@D)" && tar czf numpy-wasi.tar.gz numpy)
-	(cd "$(@D)" && tar czf pandas-wasi.tar.gz pandas)
-	(cd "$(@D)" && tar czf pydantic_core-wasi.tar.gz pydantic_core)
-	(cd "$(@D)" && tar czf regex-wasi.tar.gz regex)
-	(cd "$(@D)" && tar czf sqlalchemy-wasi.tar.gz sqlalchemy)
 	(cd "$(@D)" && tar czf tiktoken-wasi.tar.gz tiktoken)
 	(cd "$(@D)" && tar czf tiktoken_ext-wasi.tar.gz tiktoken_ext)
+
+$(BUILD_DIR)/wrapt-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
+	@mkdir -p "$(@D)"
+	(cd wrapt && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
+	cp -a wrapt/src/build/lib.*/wrapt "$(@D)"
 	(cd "$(@D)" && tar czf wrapt-wasi.tar.gz wrapt)
+
+$(BUILD_DIR)/_yaml-wasi.tar.gz $(BUILD_DIR)/yaml-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
+	@mkdir -p "$(@D)"
+	(cd yaml && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
+	cp -a yaml/src/build/lib.*/yaml "$(@D)"
+	cp -a yaml/src/build/lib.*/_yaml "$(@D)"
 	(cd "$(@D)" && tar czf yaml-wasi.tar.gz yaml)
 	(cd "$(@D)" && tar czf _yaml-wasi.tar.gz _yaml)
+
+$(BUILD_DIR)/yarl-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
+	@mkdir -p "$(@D)"
+	(cd yarl && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
+	cp -a yarl/src/build/*/yarl "$(@D)"
 	(cd "$(@D)" && tar czf yarl-wasi.tar.gz yarl)
 
 $(WASI_SDK):
