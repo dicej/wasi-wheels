@@ -63,6 +63,7 @@ $(OUTPUTS): $(WASI_SDK) $(CPYTHON)
 	cp -a yaml/src/build/lib.*/_yaml "$(@D)"
 	cp -a yarl/src/build/*/yarl "$(@D)"
 	
+	ls "$(@D)"
 	(cd "$(@D)" && tar czf aiohttp-wasi.tar.gz aiohttp)
 	(cd "$(@D)" && tar czf charset_normalizer-wasi.tar.gz charset_normalizer)
 	(cd "$(@D)" && tar czf frozenlist-wasi.tar.gz frozenlist)
