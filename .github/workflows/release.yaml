@@ -43,7 +43,7 @@ jobs:
 
       - name: Build
         shell: bash
-        run: make -j4
+        run: make
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v3
