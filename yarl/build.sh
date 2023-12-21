@@ -7,7 +7,7 @@ if [ ! -e venv ]; then
 fi
 
 . venv/bin/activate
-pip install build wheel
+pip install build wheel expandvars
 pip install -r src/requirements/cython.txt
 
 ARCH_TRIPLET=_wasi_wasm32-wasi

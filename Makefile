@@ -113,3 +113,5 @@ $(CPYTHON): $(WASI_SDK)
 .PHONY: clean
 clean:
 	rm -rf $(BUILD_DIR) cpython/builddir numpy/numpy/build
+	find . -name 'venv' -depth 2 | xargs -I {} rm -rf {}
+	find . -name 'build' -depth 3 | xargs -I {} rm -rf {}

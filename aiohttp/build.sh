@@ -8,7 +8,7 @@ fi
 
 . venv/bin/activate
 pip install -r src/requirements/lint.in -c src/requirements/lint.txt
-pip install build
+pip install build wheel
 
 ARCH_TRIPLET=_wasi_wasm32-wasi
 
