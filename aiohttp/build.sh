@@ -25,6 +25,10 @@ export RANLIB=true
 export LDFLAGS="-shared"
 export _PYTHON_SYSCONFIGDATA_NAME=_sysconfigdata_${ARCH_TRIPLET}
 
+for i in src/vendor/llhttp/src/native/api.c src/vendor/llhttp/src/native/api.h; do
+  sed -i '' -e 's/__wasm__/__quack__/g' $i
+done
+
 cd src
 
 pushd vendor/llhttp/
@@ -34,4 +38,7 @@ popd
 make cythonize
 
 python3 -m build -n -w
-wheel unpack --dest build dist/*.whl 
+wheel unpack --dest build dist/*.whl
+
+cd src/vendor/llhttp
+git checkout .

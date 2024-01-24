@@ -46,3 +46,7 @@
 [submodule "yaml/include"]
 	path = yaml/include
 	url = https://github.com/yaml/libyaml
+[submodule "numpy/src"]
+	path = numpy/src
+	url = https://github.com/numpy/numpy
+	branch = 2ce972e4b848827023f0ee74a3a7f36228760c81

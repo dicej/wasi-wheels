@@ -55,7 +55,7 @@ $(BUILD_DIR)/multidict-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
 $(BUILD_DIR)/numpy-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
 	@mkdir -p "$(@D)"
 	(cd numpy && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	cp -a numpy/numpy/build/lib.*/numpy "$(@D)"
+	cp -a numpy/src/build/lib.*/numpy "$(@D)"
 	(cd "$(@D)" && tar czf numpy-wasi.tar.gz numpy)
 
 $(BUILD_DIR)/pandas-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
@@ -146,3 +146,4 @@ clean:
 	rm -rf $(BUILD_DIR) cpython/builddir numpy/numpy/build
 	find . -name 'venv' -depth 2 | xargs -I {} rm -rf {}
 	find . -name 'build' -depth 3 | xargs -I {} rm -rf {}
+	find . -name 'dist' -depth 3 | xargs -I {} rm -rf {}
