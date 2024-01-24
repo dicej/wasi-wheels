@@ -40,5 +40,5 @@ make cythonize
 python3 -m build -n -w
 wheel unpack --dest build dist/*.whl
 
-cd src/vendor/llhttp
+cd vendor/llhttp
 git checkout .
