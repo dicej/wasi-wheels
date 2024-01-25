@@ -82,13 +82,15 @@ $(BUILD_DIR)/sqlalchemy-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
 	cp -a sqlalchemy/src/build/lib.*/sqlalchemy "$(@D)"
 	(cd "$(@D)" && tar czf sqlalchemy-wasi.tar.gz sqlalchemy)
 
-$(BUILD_DIR)/tiktoken-wasi.tar.gz $(BUILD_DIR)/tiktoken_ext-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
+$(BUILD_DIR)/tiktoken_ext-wasi.tar.gz: $(BUILD_DIR)/tiktoken-wasi.tar.gz
+	cp -a tiktoken/src/build/lib.*/tiktoken_ext "$(@D)"
+	(cd "$(@D)" && tar czf tiktoken_ext-wasi.tar.gz tiktoken_ext)
+
+$(BUILD_DIR)/tiktoken-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
 	@mkdir -p "$(@D)"
 	(cd tiktoken && PYO3_CROSS_LIB_DIR=$(PYO3_CROSS_LIB_DIR) CROSS_PREFIX=$(CPYTHON) SYSCONFIG=$(SYSCONFIG) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
 	cp -a tiktoken/src/build/lib.*/tiktoken "$(@D)"
-	cp -a tiktoken/src/build/lib.*/tiktoken_ext "$(@D)"
 	(cd "$(@D)" && tar czf tiktoken-wasi.tar.gz tiktoken)
-	(cd "$(@D)" && tar czf tiktoken_ext-wasi.tar.gz tiktoken_ext)
 
 $(BUILD_DIR)/wrapt-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
 	@mkdir -p "$(@D)"
@@ -96,12 +98,14 @@ $(BUILD_DIR)/wrapt-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
 	cp -a wrapt/src/build/lib.*/wrapt "$(@D)"
 	(cd "$(@D)" && tar czf wrapt-wasi.tar.gz wrapt)
 
-$(BUILD_DIR)/_yaml-wasi.tar.gz $(BUILD_DIR)/yaml-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
+$(BUILD_DIR)/yaml-wasi.tar.gz: $(BUILD_DIR)/_yaml-wasi.tar.gz
+	cp -a yaml/src/build/lib.*/yaml "$(@D)"
+	(cd "$(@D)" && tar czf yaml-wasi.tar.gz yaml)
+
+$(BUILD_DIR)/_yaml-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
 	@mkdir -p "$(@D)"
 	(cd yaml && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	cp -a yaml/src/build/lib.*/yaml "$(@D)"
 	cp -a yaml/src/build/lib.*/_yaml "$(@D)"
-	(cd "$(@D)" && tar czf yaml-wasi.tar.gz yaml)
 	(cd "$(@D)" && tar czf _yaml-wasi.tar.gz _yaml)
 
 $(BUILD_DIR)/yarl-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
