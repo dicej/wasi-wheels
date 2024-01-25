@@ -1,0 +1,22 @@
+
+[target.wasm32-wasi]
+rustflags = [
+    # the self-contained libs are native; these two args combined point wasm-ld at our wasi-sdk's libc
+    "-C", "link-self-contained=no",
+    # "-C", "link-args=-L$PWD/build/wasi-sdk/build/install/opt/wasi-sdk/share/wasi-sysroot/lib/wasm32-wasi",
+
+    # "--shared" requires "--experimental-pic"
+    "-C", "link-args=--experimental-pic",
+    "-C", "link-args=--shared",
+
+    # this is the rustc equivalent of C's -fPIC, required for building a dylink module
+    "-C", "relocation-model=pic",
+
+    # we need to leave link-time optimizations to the linker, wasm-ld
+    "-C", "linker-plugin-lto=yes"
+]
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+strip = true
