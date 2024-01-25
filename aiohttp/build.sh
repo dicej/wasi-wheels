@@ -30,7 +30,11 @@ export LDFLAGS="-shared"
 export _PYTHON_SYSCONFIGDATA_NAME=_sysconfigdata_${ARCH_TRIPLET}
 
 for i in src/vendor/llhttp/src/native/api.c src/vendor/llhttp/src/native/api.h; do
-  sed -i '' -e 's/__wasm__/__quack__/g' $i
+  if [ $(uname) == 'Darwin' ]; then
+    sed -i '' -e 's/__wasm__/__quack__/g' $i
+  else
+    sed -i -e 's/__wasm__/__quack__/g' $i
+  fi
 done
 
 cd src
