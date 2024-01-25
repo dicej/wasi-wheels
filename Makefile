@@ -1,7 +1,7 @@
 BUILD_DIR := $(abspath build)
 WASI_SDK := $(BUILD_DIR)/wasi-sdk
 CPYTHON := $(abspath cpython/builddir/wasi/install)
-SYSCONFIG := $(abspath cpython/builddir/wasi/build/lib.wasi-wasm32-3.11)
+SYSCONFIG := $(abspath cpython/builddir/wasi/build/lib.wasi-wasm32-3.12)
 OUTPUTS := \
 	$(BUILD_DIR)/aiohttp-wasi.tar.gz \
 	$(BUILD_DIR)/charset_normalizer-wasi.tar.gz \
@@ -18,10 +18,10 @@ OUTPUTS := \
 	$(BUILD_DIR)/yaml-wasi.tar.gz \
 	$(BUILD_DIR)/_yaml-wasi.tar.gz \
 	$(BUILD_DIR)/yarl-wasi.tar.gz
-WASI_SDK_VERSION := 20.15ge8bb8fade354
-WASI_SDK_RELEASE := shared-library-alpha-1
+WASI_SDK_VERSION := 20.31gfe4d2f01387d
+WASI_SDK_RELEASE := shared-library-alpha-3
 HOST_PLATFORM := $(shell uname -s | sed -e 's/Darwin/macos/' -e 's/Linux/linux/')
-PYO3_CROSS_LIB_DIR := $(abspath cpython/builddir/wasi/build/lib.wasi-wasm32-3.11)
+PYO3_CROSS_LIB_DIR := $(abspath cpython/builddir/wasi/build/lib.wasi-wasm32-3.12)
 
 .PHONY: all
 all: $(OUTPUTS)
@@ -138,12 +138,13 @@ $(CPYTHON): $(WASI_SDK)
 			fi) \
 		--prefix=$$(pwd)/install \
 		--enable-wasm-dynamic-linking \
+		--enable-ipv6 \
 		--disable-test-modules && \
 		make install)
 
 .PHONY: clean
 clean:
 	rm -rf $(BUILD_DIR) cpython/builddir numpy/numpy/build
-	find . -name 'venv' -depth 2 | xargs -I {} rm -rf {}
-	find . -name 'build' -depth 3 | xargs -I {} rm -rf {}
-	find . -name 'dist' -depth 3 | xargs -I {} rm -rf {}
+	find . -name 'venv' -maxdepth 2 | xargs -I {} rm -rf {}
+	find . -name 'build' -maxdepth 3 | xargs -I {} rm -rf {}
+	find . -name 'dist' -maxdepth 3 | xargs -I {} rm -rf {}
