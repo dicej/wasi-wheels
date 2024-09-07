@@ -1,6 +1,6 @@
 # WASI wheels
 
-This repository contains build files to produce WASI builds of a set of Python packages which do not have official WASI builds.
+This repository contains build files to produce WASI builds of a set of Python packages which do not have [official WASI builds](https://pypi.org/search/?c=Environment+%3A%3A+WebAssembly+%3A%3A+WASI).
 
 ## Building the Packages
 
