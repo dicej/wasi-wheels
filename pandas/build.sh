@@ -27,6 +27,14 @@ cat >venv/lib/python3.12/site-packages/numpy/core/include/numpy/npy_interrupt.h 
 #endif  /* NUMPY_CORE_INCLUDE_NUMPY_NPY_INTERRUPT_H_ */
 EOF
 
+
+# Patch numpy to add WASM support in the correct location
+# Search for the line 'define NPY_CPU_AMD64' and add wasm target to npy_cpu header
+# add wasm as a recognized cpu target in pandas' copy of numpy
+sed -i '/#define NPY_CPU_AMD64/a\
+#elif defined(__wasm__) || defined(__wasm32__)\
+    #define NPY_CPU_WASM' venv/lib/python3.12/site-packages/numpy/core/include/numpy/npy_cpu.h
+
 ARCH_TRIPLET=_wasi_wasm32-wasi
 
 export CC="${WASI_SDK_PATH}/bin/clang"
