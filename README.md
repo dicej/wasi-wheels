@@ -1,5 +1,7 @@
 # WASI wheels
 
+**Please note**: This project is an experimental proof-of-concept that Python packages containing native extensions can be cross-compiled for WASI and used with [componentize-py](https://github.com/bytecodealliance/componentize-py).  It is not being actively maintained; the packages are out-of-date with respect to their upstream versions, and might not even build anymore.  Do not rely on these builds for anything serious.
+
 This repository contains build files to produce WASI builds of a set of Python packages which do not have official WASI builds.
 
 ## Building the Packages
