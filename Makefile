@@ -1,136 +1,48 @@
 BUILD_DIR := $(abspath build)
 WASI_SDK := $(BUILD_DIR)/wasi-sdk
-CPYTHON := $(abspath cpython/builddir/wasi/install)
-SYSCONFIG := $(abspath cpython/builddir/wasi/build/lib.wasi-wasm32-3.14)
-OUTPUTS := \
-	$(BUILD_DIR)/aiohttp-wasi.tar.gz \
-	$(BUILD_DIR)/charset_normalizer-wasi.tar.gz \
-	$(BUILD_DIR)/frozenlist-wasi.tar.gz \
-	$(BUILD_DIR)/multidict-wasi.tar.gz \
-	$(BUILD_DIR)/numpy-wasi.tar.gz \
-	$(BUILD_DIR)/pandas-wasi.tar.gz \
-	$(BUILD_DIR)/pydantic_core-wasi.tar.gz \
-	$(BUILD_DIR)/regex-wasi.tar.gz \
-	$(BUILD_DIR)/sqlalchemy-wasi.tar.gz \
-	$(BUILD_DIR)/tiktoken-wasi.tar.gz \
-	$(BUILD_DIR)/tiktoken_ext-wasi.tar.gz \
-	$(BUILD_DIR)/wrapt-wasi.tar.gz \
-	$(BUILD_DIR)/yaml-wasi.tar.gz \
-	$(BUILD_DIR)/_yaml-wasi.tar.gz \
-	$(BUILD_DIR)/yarl-wasi.tar.gz
-WASI_SDK_VERSION := 27
+CPYTHON := $(BUILD_DIR)/cpython
+SYSCONFIG := $(BUILD_DIR)/cpython/builddir/wasi/build/lib.wasi-wasm32-3.15
+OUTPUTS := $(BUILD_DIR)/numpy-wasi.tar.gz
+WASI_SDK_VERSION := 34
 HOST_OS := $(shell uname -s | sed -e 's/Darwin/macos/' -e 's/Linux/linux/')
 HOST_ARCH := $(shell uname -m | sed -e 's/aarch64/arm64/')
-PYO3_CROSS_LIB_DIR := $(abspath cpython/builddir/wasi/build/lib.wasi-wasm32-3.14)
+PYO3_CROSS_LIB_DIR := $(abspath cpython/builddir/wasi/build/lib.wasi-wasm32-3.15)
 
 .PHONY: all
 all: $(OUTPUTS)
 
 $(OUTPUTS): $(WASI_SDK) $(CPYTHON)
 
-$(BUILD_DIR)/aiohttp-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
-	@mkdir -p "$(@D)"
-	(cd aiohttp && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	cp -a aiohttp/src/build/*/aiohttp "$(@D)"
-	(cd "$(@D)" && tar czf aiohttp-wasi.tar.gz aiohttp)
-
-$(BUILD_DIR)/charset_normalizer-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
-	@mkdir -p "$(@D)"
-	(cd charset_normalizer && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	cp -a charset_normalizer/src/build/lib.*/charset_normalizer "$(@D)"
-	(cd "$(@D)" && tar czf charset_normalizer-wasi.tar.gz charset_normalizer)
-
-$(BUILD_DIR)/frozenlist-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
-	@mkdir -p "$(@D)"
-	(cd frozenlist && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	cp -a frozenlist/src/build/*/frozenlist "$(@D)"
-	(cd "$(@D)" && tar czf frozenlist-wasi.tar.gz frozenlist)
-
-$(BUILD_DIR)/multidict-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
-	@mkdir -p "$(@D)"
-	(cd multidict && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	cp -a multidict/src/build/lib.*/multidict "$(@D)"
-	(cd "$(@D)" && tar czf multidict-wasi.tar.gz multidict)
-
 $(BUILD_DIR)/numpy-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
 	@mkdir -p "$(@D)"
-	(cd numpy && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	cp -a numpy/src/build/lib.*/numpy "$(@D)"
+	(cd numpy && WASI_SDK_PATH=$(WASI_SDK) CPYTHON_PATH=$(CPYTHON) NUMPY_PATH=$$(pwd) bash build.sh)
+	cp -a numpy/src/wasi-build/install/usr/local/lib/python3.15/site-packages/numpy "$(@D)"
 	(cd "$(@D)" && tar czf numpy-wasi.tar.gz numpy)
-
-$(BUILD_DIR)/pandas-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
-	@mkdir -p "$(@D)"
-	(cd pandas && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	cp -a pandas/src/build/lib.*/pandas "$(@D)"
-	(cd "$(@D)" && tar czf pandas-wasi.tar.gz pandas)
-
-$(BUILD_DIR)/pydantic_core-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
-	@mkdir -p "$(@D)"
-	(cd pydantic-core && PYO3_CROSS_LIB_DIR=$(PYO3_CROSS_LIB_DIR) CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	cp -a pydantic-core/src/build/*/pydantic_core "$(@D)"
-	(cd "$(@D)" && tar czf pydantic_core-wasi.tar.gz pydantic_core)
-
-$(BUILD_DIR)/regex-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
-	@mkdir -p "$(@D)"
-	(cd regex && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	cp -a regex/src/build/lib.*/regex "$(@D)"
-	(cd "$(@D)" && tar czf regex-wasi.tar.gz regex)
-
-$(BUILD_DIR)/sqlalchemy-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
-	@mkdir -p "$(@D)"
-	(cd sqlalchemy && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	cp -a sqlalchemy/src/build/lib.*/sqlalchemy "$(@D)"
-	(cd "$(@D)" && tar czf sqlalchemy-wasi.tar.gz sqlalchemy)
-
-$(BUILD_DIR)/tiktoken_ext-wasi.tar.gz: $(BUILD_DIR)/tiktoken-wasi.tar.gz
-	cp -a tiktoken/src/build/lib.*/tiktoken_ext "$(@D)"
-	(cd "$(@D)" && tar czf tiktoken_ext-wasi.tar.gz tiktoken_ext)
-
-$(BUILD_DIR)/tiktoken-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
-	@mkdir -p "$(@D)"
-	(cd tiktoken && PYO3_CROSS_LIB_DIR=$(PYO3_CROSS_LIB_DIR) CROSS_PREFIX=$(CPYTHON) SYSCONFIG=$(SYSCONFIG) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	cp -a tiktoken/src/build/lib.*/tiktoken "$(@D)"
-	(cd "$(@D)" && tar czf tiktoken-wasi.tar.gz tiktoken)
-
-$(BUILD_DIR)/wrapt-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
-	@mkdir -p "$(@D)"
-	(cd wrapt && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	cp -a wrapt/src/build/lib.*/wrapt "$(@D)"
-	(cd "$(@D)" && tar czf wrapt-wasi.tar.gz wrapt)
-
-$(BUILD_DIR)/yaml-wasi.tar.gz: $(BUILD_DIR)/_yaml-wasi.tar.gz
-	cp -a yaml/src/build/lib.*/yaml "$(@D)"
-	(cd "$(@D)" && tar czf yaml-wasi.tar.gz yaml)
-
-$(BUILD_DIR)/_yaml-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
-	@mkdir -p "$(@D)"
-	(cd yaml && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	cp -a yaml/src/build/lib.*/_yaml "$(@D)"
-	(cd "$(@D)" && tar czf _yaml-wasi.tar.gz _yaml)
-
-$(BUILD_DIR)/yarl-wasi.tar.gz: $(WASI_SDK) $(CPYTHON)
-	@mkdir -p "$(@D)"
-	(cd yarl && CROSS_PREFIX=$(CPYTHON) WASI_SDK_PATH=$(WASI_SDK) bash build.sh)
-	cp -a yarl/src/build/*/yarl "$(@D)"
-	(cd "$(@D)" && tar czf yarl-wasi.tar.gz yarl)
 
 $(WASI_SDK):
 	@mkdir -p "$(@D)"
 	(cd "$(@D)" && \
-		curl -LO https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-${WASI_SDK_VERSION}/wasi-sdk-${WASI_SDK_VERSION}.0-${HOST_ARCH}-${HOST_OS}.tar.gz && \
-		tar xf wasi-sdk-${WASI_SDK_VERSION}.0-${HOST_ARCH}-${HOST_OS}.tar.gz && \
-		mv wasi-sdk-${WASI_SDK_VERSION}.0-${HOST_ARCH}-${HOST_OS} wasi-sdk && \
-		rm "wasi-sdk-$(WASI_SDK_VERSION).0-${HOST_ARCH}-${HOST_OS}.tar.gz")
+		curl -LO https://github.com/dicej/wasi-sdk/releases/download/wasi-sdk-${WASI_SDK_VERSION}-shared-library-exceptions/wasi-sdk-${WASI_SDK_VERSION}.0-shared-library-exceptions-${HOST_ARCH}-${HOST_OS}.tar.gz && \
+		tar xf wasi-sdk-${WASI_SDK_VERSION}.0-shared-library-exceptions-${HOST_ARCH}-${HOST_OS}.tar.gz && \
+		mv wasi-sdk-${WASI_SDK_VERSION}.0-shared-library-exceptions-${HOST_ARCH}-${HOST_OS} "$@" && \
+		rm wasi-sdk-$(WASI_SDK_VERSION).0-shared-library-exceptions-${HOST_ARCH}-${HOST_OS}.tar.gz)
 
 $(CPYTHON): $(WASI_SDK)
 	@mkdir -p "$(@D)"
-	@mkdir -p "$(@D)"/../build
-	@echo "$(@D)"
-	(cd "$(@D)"/../build && ../../configure --prefix=$$(pwd)/install && make)
 	(cd "$(@D)" && \
+		curl -LO https://www.python.org/ftp/python/3.15.2/Python-3.15.2.tgz && \
+		tar xf Python-3.15.2.tgz && \
+		mv Python-3.15.2 "$@" && \
+		rm Python-3.15.2.tgz)
+	@mkdir -p "$@/builddir/build"
+	(cd "$@/builddir/build" && ../../configure --prefix=$$(pwd)/install && make install)
+	@mkdir -p "$@/builddir/wasip3"
+	(cd "$@/builddir/wasip3" && \
 		WASI_SDK_PATH=$(WASI_SDK) \
-		CONFIG_SITE=../../Tools/wasm/wasi/config.site-wasm32-wasi \
-		CFLAGS=-fPIC \
+		CONFIG_SITE=../../Platforms/WASI/config.site-wasm32-wasi \
+		HOSTRUNNER=wasmtime \
+		CFLAGS="--target=wasm32-wasip3 -fPIC" \
+		LDFLAGS="--target=wasm32-wasip3" \
 		../../Tools/wasm/wasi-env \
 		../../configure \
 		-C \
@@ -143,21 +55,22 @@ $(CPYTHON): $(WASI_SDK)
 		--prefix=$$(pwd)/install \
 		--enable-wasm-dynamic-linking \
 		--enable-ipv6 \
-		--disable-test-modules && \
+		--disable-test-modules \
+		--without-system-libmpdec && \
 		make build_all install && \
 		$(WASI_SDK)/bin/clang \
-		--target=wasm32-wasip2 \
+		--target=wasm32-wasip3 \
 		-shared \
-		-o $(CPYTHON)/lib/libpython3.14.so \
-		-Wl,--whole-archive $(CPYTHON)/lib/libpython3.14.a -Wl,--no-whole-archive \
-		$(CPYTHON)/../Modules/_hacl/libHacl_HMAC.a \
-		$(CPYTHON)/../Modules/_hacl/libHacl_Hash_BLAKE2.a \
-		$(CPYTHON)/../Modules/_hacl/libHacl_Hash_MD5.a \
-		$(CPYTHON)/../Modules/_hacl/libHacl_Hash_SHA1.a \
-		$(CPYTHON)/../Modules/_hacl/libHacl_Hash_SHA2.a \
-		$(CPYTHON)/../Modules/_hacl/libHacl_Hash_SHA3.a \
-		$(CPYTHON)/../Modules/_decimal/libmpdec/libmpdec.a \
-		$(CPYTHON)/../Modules/expat/libexpat.a \
+		-o $@/builddir/wasip3/install/lib/libpython3.15.so \
+		-Wl,--whole-archive $@/builddir/wasip3/install/lib/libpython3.15.a -Wl,--no-whole-archive \
+		$@/builddir/wasip3/Modules/_hacl/libHacl_HMAC.a \
+		$@/builddir/wasip3/Modules/_hacl/libHacl_Hash_BLAKE2.a \
+		$@/builddir/wasip3/Modules/_hacl/libHacl_Hash_MD5.a \
+		$@/builddir/wasip3/Modules/_hacl/libHacl_Hash_SHA1.a \
+		$@/builddir/wasip3/Modules/_hacl/libHacl_Hash_SHA2.a \
+		$@/builddir/wasip3/Modules/_hacl/libHacl_Hash_SHA3.a \
+		$@/builddir/wasip3/Modules/_decimal/libmpdec/libmpdec.a \
+		$@/builddir/wasip3/Modules/expat/libexpat.a \
 		-lwasi-emulated-signal \
 		-lwasi-emulated-getpid \
 		-lwasi-emulated-process-clocks \
@@ -165,7 +78,5 @@ $(CPYTHON): $(WASI_SDK)
 
 .PHONY: clean
 clean:
-	rm -rf $(BUILD_DIR) cpython/builddir numpy/numpy/build
-	find . -name 'venv' -maxdepth 2 | xargs -I {} rm -rf {}
-	find . -name 'build' -maxdepth 3 | xargs -I {} rm -rf {}
-	find . -name 'dist' -maxdepth 3 | xargs -I {} rm -rf {}
+	rm -rf $(BUILD_DIR) numpy/numpy/build
+

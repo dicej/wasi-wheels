@@ -1,3 +1,6 @@
 build
-**/venv
-multidict/929.patch
+numpy/build-details.json
+numpy/cross.txt
+numpy/patch.txt
+numpy/wasm-ld-wrapper.sh
+
