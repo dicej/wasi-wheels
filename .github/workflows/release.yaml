@@ -19,9 +19,9 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.15'
 
       - uses: actions/setup-node@v3.8.1
 
@@ -31,7 +31,7 @@ jobs:
           toolchain: stable
           profile: minimal
           override: true
-          target: wasm32-wasi
+          target: wasm32-wasip2
 
       - name: Cache CPython
         id: cache-cpython-wasi
